@@ -10,9 +10,4 @@ def get_weather(query):
 
     # Save the returned data as JSON object in the form of a python dict
     data = r.json()
-
-    # Print the data in a formatted manner
-    
-
-
     return data
