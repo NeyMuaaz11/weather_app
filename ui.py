@@ -16,14 +16,14 @@ class Window(QMainWindow):
 
     #define all the widgets in the window
     def initUI(self):
-        #input field where the user will enter the city
+        #create input field where the user will enter the city
         self.input = QtWidgets.QLineEdit(self)
         self.input.setPlaceholderText("Enter City")
         self.input.move(150,40)
         self.input.resize(200,30)
         self.input.setStyleSheet("border: 2px; background-color: white")
         
-        #search push-button to trigger the API call
+        #create search push-button to trigger the API call
         self.search = QtWidgets.QPushButton(self)
         self.search.setText("Search")
         self.search.resize(65,25)
@@ -32,38 +32,48 @@ class Window(QMainWindow):
         self.search.clicked.connect(self.clicked)
         self.search.setStyleSheet("background-color: white")
 
-        #groupbox where the weather-related data will be printed
-        self.printbox = QtWidgets.QGroupBox(self)
-        self.printbox.resize(400,200)
-        self.printbox.move(50, 115)
-        self.printbox.setStyleSheet("border-radius: 10px; background-color: white")
+        #create label for sun and moon icon using QLabel and QPixmap
+        self.img = QtWidgets.QLabel(self)
+        self.sun = QtGui.QPixmap('sun.png')
+        self.img.setStyleSheet("background:transparent")
+        self.img.move(305,155)
+        self.moon = QtGui.QPixmap('moon.png')
 
-        #label used to print the data
+        #create heading label
+        self.heading = QtWidgets.QLabel(self)
+        self.heading.move(60, 125)
+        self.heading.setStyleSheet("font: bold; background:transparent")
+
+        #create label used to print the data
         self.weather_print = QtWidgets.QLabel(self)
-        self.weather_print.move(55,150)
-        self.weather_print.setStyleSheet("background-color: white")
+        self.weather_print.move(55,160)
+        self.weather_print.setStyleSheet("border-radius: 10px; background:transparent")
 
-        #key binding for the search push-button
+        #create key binding for the search push-button
         self.enter = QtWidgets.QShortcut(QtGui.QKeySequence('Return'), self)
         self.enter.activated.connect(self.clicked)
 
     #function to print the data onto the terminal and in the groupbox
     def print(self):
-        #if-condition to change background color according to the time of day
+        #if-condition to change background color and icon according to the time of day
         if self.timing == 0:
             self.setStyleSheet("background-color: grey")
+            self.img.setPixmap(self.moon)
+            
         else:
+            self.img.setPixmap(self.sun)
             self.setStyleSheet("background-color: skyblue")
 
         #print to terminal
         print(f"{self.city}, {self.region}, {self.country}\n{self.time}")
         print(f"-> Temperature: {self.temp}C\n-> Feels like: {self.feels_like}C\n-> Humidity: {self.humidity}")
-        print(f"-> Skies: {self.condition}\n-> Visibility: {self.visibility}km")
+        print(f"-> Conditions: {self.condition}\n-> Visibility: {self.visibility}km")
         print(f"-> Wind Speed: {self.wind_speed}\n-> Wind direction: {self.wind_angle} in {self.wind_dir}")
 
-        #print to groupbox
-        self.printbox.setTitle(f"{self.city}, {self.region}, {self.country}  {self.time}")
-        self.weather_print.setText(f"-> Temperature: {self.temp}C\n-> Feels like: {self.feels_like}C\n-> Humidity: {self.humidity}\n-> Skies: {self.condition}\n-> Visibility: {self.visibility}km\n-> Wind Speed: {self.wind_speed}\n-> Wind direction: {self.wind_angle} in {self.wind_dir}")
+        #print to UI
+        self.heading.setText(f"{self.city}, {self.region}, {self.country}\n{self.time}")
+        self.heading.adjustSize()
+        self.weather_print.setText(f"-> Temperature: {self.temp}C\n-> Feels like: {self.feels_like}C\n-> Humidity: {self.humidity}\n-> Conditions: {self.condition}\n-> Visibility: {self.visibility}km\n-> Wind Speed: {self.wind_speed}\n-> Wind direction: {self.wind_angle} in {self.wind_dir}")
         self.weather_print.adjustSize()    
 
     #function called when search is clicked. Makes API call and parses returned data. Exception handling included
@@ -87,7 +97,9 @@ class Window(QMainWindow):
             self.input.clear()
         except KeyError:
             print("Invalid city! Please enter a valid city")
+            #create popup box
             msg = QtWidgets.QMessageBox(self)
+            msg.setStyleSheet("background-color: white")
             msg.setWindowTitle("Invalid City!")
             msg.setText("Please enter a valid city.")
             msg.setIcon(QtWidgets.QMessageBox.Warning)
@@ -104,4 +116,4 @@ def window():
     win.show()
     sys.exit(app.exec_())
 
-window()
+window()    
